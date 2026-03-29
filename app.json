@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "MamaCare+",
+    "slug": "mamacare-plus",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "mamacareplus",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mamacare.plus"
+    },
+    "android": {
+      "package": "com.mamacare.plus"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
