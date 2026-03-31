@@ -8,17 +8,18 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   Onboarding: undefined;
   MainTabs: undefined;
+  Notifications: undefined;
   SymptomChecker: undefined;
   Profile: undefined;
   VisitDetails: { visitId: string };
 };
 
 export type MainTabParamList = {
-  Dashboard: undefined;
+  Home: undefined;
   Pregnancy: undefined;
   Baby: undefined;
   Appointments: undefined;
-  Learn: undefined;
+  AI: undefined;
 };
 
 export type RootScreenProps<RouteName extends keyof RootStackParamList> = NativeStackScreenProps<

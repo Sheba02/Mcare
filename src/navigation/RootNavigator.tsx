@@ -4,12 +4,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { AIScreen } from '../screens/AIScreen';
 import { AppointmentsScreen } from '../screens/AppointmentsScreen';
 import { BabyTrackerScreen } from '../screens/BabyTrackerScreen';
 import { DashboardScreen } from '../screens/DashboardScreen';
 import { ForgotPasswordScreen } from '../screens/ForgotPasswordScreen';
-import { LearnScreen } from '../screens/LearnScreen';
 import { LoginScreen } from '../screens/LoginScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { PregnancyTrackerScreen } from '../screens/PregnancyTrackerScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
@@ -18,6 +19,7 @@ import { SplashScreen } from '../screens/SplashScreen';
 import { SymptomCheckerScreen } from '../screens/SymptomCheckerScreen';
 import { VisitDetailsScreen } from '../screens/VisitDetailsScreen';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
+import { useAppLanguage } from '../context/AppLanguageContext';
 import { palette } from '../theme/tokens';
 import type { MainTabParamList, RootStackParamList } from '../types/navigation';
 
@@ -38,7 +40,7 @@ const navigationTheme = {
 
 function getTabIcon(name: keyof MainTabParamList): keyof typeof MaterialCommunityIcons.glyphMap {
   switch (name) {
-    case 'Dashboard':
+    case 'Home':
       return 'view-dashboard-outline';
     case 'Pregnancy':
       return 'heart-pulse';
@@ -46,22 +48,26 @@ function getTabIcon(name: keyof MainTabParamList): keyof typeof MaterialCommunit
       return 'baby-face-outline';
     case 'Appointments':
       return 'calendar-clock-outline';
-    case 'Learn':
-      return 'book-open-page-variant-outline';
+    case 'AI':
+      return 'robot-outline';
     default:
       return 'circle-outline';
   }
 }
 
 function MainTabNavigator({
+  onOpenNotifications,
   onOpenProfile,
   onOpenSymptomChecker,
   onOpenVisitDetails,
 }: {
+  onOpenNotifications: () => void;
   onOpenProfile: () => void;
   onOpenSymptomChecker: () => void;
   onOpenVisitDetails: (visitId: string) => void;
 }): React.JSX.Element {
+  const { t } = useAppLanguage();
+
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
@@ -88,20 +94,29 @@ function MainTabNavigator({
         ),
       })}
     >
-      <Tabs.Screen name="Dashboard">
+      <Tabs.Screen name="Home" options={{ tabBarLabel: t('homeTab') }}>
         {() => (
           <DashboardScreen
+            onOpenNotifications={onOpenNotifications}
             onOpenProfile={onOpenProfile}
             onOpenSymptomChecker={onOpenSymptomChecker}
           />
         )}
       </Tabs.Screen>
-      <Tabs.Screen name="Pregnancy" component={PregnancyTrackerScreen} />
-      <Tabs.Screen name="Baby" component={BabyTrackerScreen} />
-      <Tabs.Screen name="Appointments">
+      <Tabs.Screen
+        name="Pregnancy"
+        component={PregnancyTrackerScreen}
+        options={{ tabBarLabel: t('pregnancyTab') }}
+      />
+      <Tabs.Screen
+        name="Baby"
+        component={BabyTrackerScreen}
+        options={{ tabBarLabel: t('babyTab') }}
+      />
+      <Tabs.Screen name="Appointments" options={{ tabBarLabel: t('appointmentsTab') }}>
         {() => <AppointmentsScreen onOpenVisitDetails={onOpenVisitDetails} />}
       </Tabs.Screen>
-      <Tabs.Screen name="Learn" component={LearnScreen} />
+      <Tabs.Screen name="AI" component={AIScreen} options={{ tabBarLabel: t('aiTab') }} />
     </Tabs.Navigator>
   );
 }
@@ -119,12 +134,14 @@ export function RootNavigator(): React.JSX.Element {
         <RootStack.Screen name="MainTabs">
           {({ navigation }) => (
             <MainTabNavigator
+              onOpenNotifications={() => navigation.navigate('Notifications')}
               onOpenProfile={() => navigation.navigate('Profile')}
               onOpenSymptomChecker={() => navigation.navigate('SymptomChecker')}
               onOpenVisitDetails={(visitId) => navigation.navigate('VisitDetails', { visitId })}
             />
           )}
         </RootStack.Screen>
+        <RootStack.Screen name="Notifications" component={NotificationsScreen} />
         <RootStack.Screen name="SymptomChecker" component={SymptomCheckerScreen} />
         <RootStack.Screen name="Profile" component={ProfileScreen} />
         <RootStack.Screen name="VisitDetails" component={VisitDetailsScreen} />

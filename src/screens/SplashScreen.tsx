@@ -3,10 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { ScreenFrame } from '../components/ScreenFrame';
+import { useAppLanguage } from '../context/AppLanguageContext';
 import { gradients, palette, radii } from '../theme/tokens';
 import type { RootScreenProps } from '../types/navigation';
 
 export function SplashScreen({ navigation }: RootScreenProps<'Splash'>): React.JSX.Element {
+  const { t } = useAppLanguage();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Welcome');
@@ -24,7 +27,7 @@ export function SplashScreen({ navigation }: RootScreenProps<'Splash'>): React.J
         <Text style={styles.badgeText}>M+</Text>
       </LinearGradient>
       <Text style={styles.title}>MamaCare+</Text>
-      <Text style={styles.subtitle}>Maternal and child health companion for every stage of care.</Text>
+      <Text style={styles.subtitle}>{t('splashSubtitle')}</Text>
     </ScreenFrame>
   );
 }

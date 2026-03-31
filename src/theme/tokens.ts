@@ -1,11 +1,15 @@
 export const palette = {
   background: '#F6EFE5',
   surface: '#FFFCF7',
-  surfaceMuted: '#F7E7D7',
-  primary: '#CB6542',
-  primaryDeep: '#9F472D',
-  secondary: '#1E5C60',
-  secondarySoft: '#D9ECE7',
+  surfaceMuted: '#FCE7F3',
+  brand500: '#EC4899',
+  brand600: '#DB2777',
+  brand700: '#BE185D',
+  brandSoft: '#FCE7F3',
+  primary: '#EC4899',
+  primaryDeep: '#BE185D',
+  secondary: '#DB2777',
+  secondarySoft: '#FCE7F3',
   accent: '#E8A33A',
   accentSoft: '#FFF2D8',
   success: '#2E6E58',
@@ -13,13 +17,13 @@ export const palette = {
   danger: '#9A3128',
   text: '#162120',
   textMuted: '#566666',
-  border: '#E8D8C7',
+  border: '#F3D3E3',
   white: '#FFFFFF',
 } as const;
 
 export const gradients = {
-  page: ['#FFF8EF', '#F6EFE5'] as const,
-  hero: ['#184F57', '#3A8577'] as const,
+  page: ['#FCF8F3', '#F3EDE6'] as const,
+  hero: ['#BE185D', '#DB2777'] as const,
   sunrise: ['#F5C48D', '#E77E4F'] as const,
   glow: ['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.72)'] as const,
 } as const;

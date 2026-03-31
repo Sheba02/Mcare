@@ -10,7 +10,7 @@ export type Appointment = {
 export const dashboardStats = [
   { label: 'Care plan completion', value: '84%' },
   { label: 'Upcoming visits', value: '3' },
-  { label: 'Weekly learning streak', value: '12d' },
+  { label: 'Active reminders', value: '12' },
   { label: 'Immunizations on schedule', value: '92%' },
 ];
 
@@ -93,23 +93,46 @@ export const babyHighlights = [
   },
 ];
 
-export const learningTracks = [
+export const babyVaccineSchedule = [
+  { name: 'BCG', due: 'At birth' },
+  { name: 'OPV 0', due: 'At birth' },
+  { name: 'OPV 1', due: '6 weeks' },
+  { name: 'Penta 1', due: '6 weeks' },
+  { name: 'PCV 1', due: '6 weeks' },
+  { name: 'Rotavirus 1', due: '6 weeks' },
+  { name: 'OPV 2', due: '10 weeks' },
+  { name: 'Penta 2', due: '10 weeks' },
+  { name: 'PCV 2', due: '10 weeks' },
+  { name: 'Rotavirus 2', due: '10 weeks' },
+  { name: 'OPV 3', due: '14 weeks' },
+  { name: 'Penta 3', due: '14 weeks' },
+  { name: 'PCV 3', due: '14 weeks' },
+  { name: 'Measles-Rubella 1', due: '9 months' },
+];
+
+export const alertReminders = [
   {
-    title: 'Healthy pregnancy habits',
-    body: 'Meals, hydration, warning signs, clinic attendance, and planning for delivery.',
+    title: 'Next ANC visit reminder',
+    body: 'ANC visit tomorrow at 08:30 AM. Bring the clinic card, previous notes, and transport plan.',
   },
   {
-    title: 'Danger sign recognition',
-    body: 'Turn severe symptoms into clear action steps with no guesswork about urgency.',
+    title: 'Medication reminder',
+    body: 'Iron and folic acid tablet due tonight after food. Mark it complete so the care team can see adherence.',
   },
   {
-    title: 'Infant vaccines and growth',
-    body: 'Explain why timing matters and how to recover when a schedule slips.',
+    title: 'Baby immunization follow-up',
+    body: 'Penta 2 is coming up this week. If missed, the app should escalate and prompt catch-up support.',
   },
   {
-    title: 'Postpartum support',
-    body: 'Recovery, mood, bleeding, breastfeeding, and early newborn care for the first weeks.',
+    title: 'High-priority symptom alert',
+    body: 'If bleeding, severe headache, fever, or breathing trouble is logged, raise an urgent care alert immediately.',
   },
+];
+
+export const aiStarterPrompts = [
+  'What foods should I eat this week of pregnancy?',
+  'My baby missed a vaccine. What should I do next?',
+  'When should I go to the clinic urgently?',
 ];
 
 export const symptomLevels = [

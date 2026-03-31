@@ -1,40 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenFrame } from '../components/ScreenFrame';
 import { SectionHeader } from '../components/SectionHeader';
+import { useAppLanguage, type AppLanguage } from '../context/AppLanguageContext';
+import { getLocalizedContent } from '../data/localizedContent';
 import { palette, radii } from '../theme/tokens';
 import type { RootScreenProps } from '../types/navigation';
 
-const languages = ['Swahili', 'English', 'Both'];
-const profiles = ['Pregnant mother', 'New mother', 'Caregiver'];
+const languages: AppLanguage[] = ['Kinyarwanda', 'English', 'Kiswahili'];
 
 export function OnboardingScreen({ navigation }: RootScreenProps<'Onboarding'>): React.JSX.Element {
+  const { language, setLanguage, t } = useAppLanguage();
+  const content = getLocalizedContent(language);
   const [nickname, setNickname] = useState('Little Star');
   const [clinic, setClinic] = useState('Kijiji Health Centre');
-  const [language, setLanguage] = useState('Both');
-  const [profile, setProfile] = useState('Pregnant mother');
+  const [profile, setProfile] = useState(content.onboardingProfiles[0]);
+
+  useEffect(() => {
+    if (!content.onboardingProfiles.includes(profile)) {
+      setProfile(content.onboardingProfiles[0]);
+    }
+  }, [content.onboardingProfiles, profile]);
 
   return (
     <ScreenFrame>
       <SectionHeader
-        title="Set up care preferences"
-        subtitle="A strong onboarding flow helps the product feel tailored from the first minute."
+        title={t('onboardingTitle')}
+        subtitle={t('onboardingSubtitle')}
       />
 
       <View style={styles.form}>
         <InputField
-          label="Baby nickname"
+          label={t('babyNickname')}
           placeholder="Little Star"
           value={nickname}
           onChangeText={setNickname}
           autoCapitalize="words"
         />
         <InputField
-          label="Preferred clinic"
-          placeholder="Facility name"
+          label={t('preferredClinic')}
+          placeholder={language === 'English' ? 'Facility name' : language === 'Kiswahili' ? 'Jina la kituo' : 'Izina ry’ivuriro'}
           value={clinic}
           onChangeText={setClinic}
           autoCapitalize="words"
@@ -42,9 +50,9 @@ export function OnboardingScreen({ navigation }: RootScreenProps<'Onboarding'>):
       </View>
 
       <View style={styles.selectorGroup}>
-        <Text style={styles.selectorLabel}>Profile type</Text>
+        <Text style={styles.selectorLabel}>{t('profileType')}</Text>
         <View style={styles.row}>
-          {profiles.map((item) => (
+          {content.onboardingProfiles.map((item) => (
             <Pressable
               key={item}
               onPress={() => setProfile(item)}
@@ -57,7 +65,7 @@ export function OnboardingScreen({ navigation }: RootScreenProps<'Onboarding'>):
       </View>
 
       <View style={styles.selectorGroup}>
-        <Text style={styles.selectorLabel}>Preferred language</Text>
+        <Text style={styles.selectorLabel}>{t('preferredLanguage')}</Text>
         <View style={styles.row}>
           {languages.map((item) => (
             <Pressable
@@ -71,7 +79,7 @@ export function OnboardingScreen({ navigation }: RootScreenProps<'Onboarding'>):
         </View>
       </View>
 
-      <PrimaryButton title="Finish setup" onPress={() => navigation.replace('MainTabs')} />
+      <PrimaryButton title={t('finishSetup')} onPress={() => navigation.replace('MainTabs')} />
     </ScreenFrame>
   );
 }

@@ -19,8 +19,6 @@ export function ScreenFrame({
   return (
     <View style={styles.root}>
       <LinearGradient colors={gradients.page} style={styles.gradient}>
-        <View style={styles.blobTop} />
-        <View style={styles.blobBottom} />
         <SafeAreaView style={styles.safeArea}>
           {scroll ? (
             <ScrollView
@@ -59,23 +57,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 28,
     gap: 18,
-  },
-  blobTop: {
-    position: 'absolute',
-    top: -30,
-    right: -40,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(245, 196, 141, 0.4)',
-  },
-  blobBottom: {
-    position: 'absolute',
-    left: -60,
-    bottom: 80,
-    width: 230,
-    height: 230,
-    borderRadius: 115,
-    backgroundColor: 'rgba(217, 236, 231, 0.72)',
   },
 });

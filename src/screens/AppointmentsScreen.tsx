@@ -1,20 +1,104 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { appointments } from '../data/appContent';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenFrame } from '../components/ScreenFrame';
 import { SectionHeader } from '../components/SectionHeader';
+import { useAppLanguage, type AppLanguage } from '../context/AppLanguageContext';
+import { getLocalizedContent } from '../data/localizedContent';
 import { palette, radii } from '../theme/tokens';
 
 type AppointmentsScreenProps = {
   onOpenVisitDetails: (visitId: string) => void;
 };
 
+type AppointmentCopy = {
+  ancVisitDate: string;
+  ancCaption: string;
+  addAncVisit: string;
+  pncVisitDate: string;
+  pncCaption: string;
+  addPncVisit: string;
+  nextAppointmentDate: string;
+  nextAppointmentCaption: string;
+  notes: string;
+  notesPlaceholder: string;
+  notesCaption: string;
+  noAncVisits: string;
+  noPncVisits: string;
+  noNotes: string;
+  notSet: string;
+  summary: (args: { anc: string; pnc: string; next: string; notes: string }) => string;
+  openDetails: string;
+};
+
+const appointmentCopy: Record<AppLanguage, AppointmentCopy> = {
+  English: {
+    ancVisitDate: 'ANC visit date',
+    ancCaption: 'Add each antenatal care visit one by one.',
+    addAncVisit: 'Add ANC visit',
+    pncVisitDate: 'PNC visit date',
+    pncCaption: 'Add each postnatal care visit one by one.',
+    addPncVisit: 'Add PNC visit',
+    nextAppointmentDate: 'Next appointment date',
+    nextAppointmentCaption: 'This date should drive reminders and missed-visit detection.',
+    notes: 'Notes',
+    notesPlaceholder: 'Optional follow-up note',
+    notesCaption: 'Use this for transport issues, rescheduling, or provider instructions.',
+    noAncVisits: 'No ANC visits recorded yet',
+    noPncVisits: 'No PNC visits recorded yet',
+    noNotes: 'No visit notes added yet',
+    notSet: 'Not set',
+    summary: ({ anc, pnc, next, notes }) => `ANC visits: ${anc}\nPNC visits: ${pnc}\nNext appointment: ${next}\nNotes: ${notes}`,
+    openDetails: 'Open details',
+  },
+  Kiswahili: {
+    ancVisitDate: 'Tarehe ya ziara ya ANC',
+    ancCaption: 'Ongeza kila ziara ya kliniki ya ujauzito moja baada ya nyingine.',
+    addAncVisit: 'Ongeza ziara ya ANC',
+    pncVisitDate: 'Tarehe ya ziara ya PNC',
+    pncCaption: 'Ongeza kila ziara ya baada ya kujifungua moja baada ya nyingine.',
+    addPncVisit: 'Ongeza ziara ya PNC',
+    nextAppointmentDate: 'Tarehe ya miadi ijayo',
+    nextAppointmentCaption: 'Tarehe hii inapaswa kuendesha vikumbusho na ufuatiliaji wa miadi iliyokosekana.',
+    notes: 'Maelezo',
+    notesPlaceholder: 'Maelezo ya hiari ya ufuatiliaji',
+    notesCaption: 'Tumia hapa kwa changamoto za usafiri, kubadilisha tarehe, au maelekezo ya mtoa huduma.',
+    noAncVisits: 'Bado hakuna ziara za ANC zilizorekodiwa',
+    noPncVisits: 'Bado hakuna ziara za PNC zilizorekodiwa',
+    noNotes: 'Bado hakuna maelezo ya ziara',
+    notSet: 'Haijawekwa',
+    summary: ({ anc, pnc, next, notes }) => `Ziara za ANC: ${anc}\nZiara za PNC: ${pnc}\nMiadi ijayo: ${next}\nMaelezo: ${notes}`,
+    openDetails: 'Fungua maelezo',
+  },
+  Kinyarwanda: {
+    ancVisitDate: 'Itariki ya gahunda ya ANC',
+    ancCaption: 'Andika buri gahunda yo kwipimisha igihe utwite imwe imwe.',
+    addAncVisit: 'Ongeraho gahunda ya ANC',
+    pncVisitDate: 'Itariki ya gahunda ya PNC',
+    pncCaption: 'Andika buri gahunda yo gukurikirana nyuma yo kubyara imwe imwe.',
+    addPncVisit: 'Ongeraho gahunda ya PNC',
+    nextAppointmentDate: 'Itariki ya gahunda itaha',
+    nextAppointmentCaption: 'Iyi tariki ni yo ikwiye gukoreshwa mu kwibutsa no kumenya gahunda zabuze.',
+    notes: 'Ibisobanuro',
+    notesPlaceholder: 'Icyitonderwa cy’inyongera',
+    notesCaption: 'Andika ibibazo by’ingendo, kwimura gahunda, cyangwa amabwiriza ya muganga.',
+    noAncVisits: 'Nta gahunda za ANC zirandikwa',
+    noPncVisits: 'Nta gahunda za PNC zirandikwa',
+    noNotes: 'Nta bisobanuro bya gahunda birandikwa',
+    notSet: 'Ntabwo byashyizweho',
+    summary: ({ anc, pnc, next, notes }) => `Gahunda za ANC: ${anc}\nGahunda za PNC: ${pnc}\nGahunda itaha: ${next}\nIbisobanuro: ${notes}`,
+    openDetails: 'Fungura ibisobanuro',
+  },
+};
+
 export function AppointmentsScreen({
   onOpenVisitDetails,
 }: AppointmentsScreenProps): React.JSX.Element {
+  const { language, t } = useAppLanguage();
+  const content = getLocalizedContent(language);
+  const copy = appointmentCopy[language];
   const [ancVisitDate, setAncVisitDate] = useState('');
   const [pncVisitDate, setPncVisitDate] = useState('');
   const [nextAppointmentDate, setNextAppointmentDate] = useState('2026-03-30');
@@ -23,12 +107,17 @@ export function AppointmentsScreen({
   const [pncVisits, setPncVisits] = useState<string[]>([]);
 
   const reminderSummary = useMemo(() => {
-    const ancSummary = ancVisits.length > 0 ? ancVisits.join(', ') : 'No ANC visits recorded yet';
-    const pncSummary = pncVisits.length > 0 ? pncVisits.join(', ') : 'No PNC visits recorded yet';
-    const noteSummary = notes.trim().length > 0 ? notes : 'No visit notes added yet';
+    const ancSummary = ancVisits.length > 0 ? ancVisits.join(', ') : copy.noAncVisits;
+    const pncSummary = pncVisits.length > 0 ? pncVisits.join(', ') : copy.noPncVisits;
+    const noteSummary = notes.trim().length > 0 ? notes : copy.noNotes;
 
-    return `ANC visits: ${ancSummary}\nPNC visits: ${pncSummary}\nNext appointment: ${nextAppointmentDate || 'Not set'}\nNotes: ${noteSummary}`;
-  }, [ancVisits, notes, nextAppointmentDate, pncVisits]);
+    return copy.summary({
+      anc: ancSummary,
+      pnc: pncSummary,
+      next: nextAppointmentDate || copy.notSet,
+      notes: noteSummary,
+    });
+  }, [ancVisits, copy, nextAppointmentDate, notes, pncVisits]);
 
   const addAncVisit = (): void => {
     if (!ancVisitDate.trim()) {
@@ -50,66 +139,61 @@ export function AppointmentsScreen({
 
   return (
     <ScreenFrame>
-      <SectionHeader
-        title="Appointments"
-        subtitle="The schedule view is ready for ANC, PNC, vaccines, and missed-visit follow-up."
-      />
+      <SectionHeader title={t('appointmentsTitle')} subtitle={t('appointmentsSubtitle')} />
 
       <View style={styles.formCard}>
-        <Text style={styles.formTitle}>Medical visit data</Text>
-        <Text style={styles.formBody}>
-          Keep visit records visible so missed appointments are easier to notice and follow up quickly.
-        </Text>
+        <Text style={styles.formTitle}>{t('medicalVisitData')}</Text>
+        <Text style={styles.formBody}>{t('medicalVisitBody')}</Text>
 
         <InputField
-          label="ANC visit date"
+          label={copy.ancVisitDate}
           placeholder="YYYY-MM-DD"
           value={ancVisitDate}
           onChangeText={setAncVisitDate}
-          caption="Add each antenatal care visit one by one."
+          caption={copy.ancCaption}
         />
-        <PrimaryButton title="Add ANC visit" onPress={addAncVisit} variant="soft" />
+        <PrimaryButton title={copy.addAncVisit} onPress={addAncVisit} variant="soft" />
 
         <InputField
-          label="PNC visit date"
+          label={copy.pncVisitDate}
           placeholder="YYYY-MM-DD"
           value={pncVisitDate}
           onChangeText={setPncVisitDate}
-          caption="Add each postnatal care visit one by one."
+          caption={copy.pncCaption}
         />
-        <PrimaryButton title="Add PNC visit" onPress={addPncVisit} variant="soft" />
+        <PrimaryButton title={copy.addPncVisit} onPress={addPncVisit} variant="soft" />
 
         <InputField
-          label="Next appointment date"
+          label={copy.nextAppointmentDate}
           placeholder="YYYY-MM-DD"
           value={nextAppointmentDate}
           onChangeText={setNextAppointmentDate}
-          caption="This date should drive reminders and missed-visit detection."
+          caption={copy.nextAppointmentCaption}
         />
 
         <InputField
-          label="Notes"
-          placeholder="Optional follow-up note"
+          label={copy.notes}
+          placeholder={copy.notesPlaceholder}
           value={notes}
           onChangeText={setNotes}
           autoCapitalize="sentences"
-          caption="Use this for transport issues, rescheduling, or provider instructions."
+          caption={copy.notesCaption}
         />
       </View>
 
       <View style={styles.summaryCard}>
-        <Text style={styles.summaryTitle}>Missed-visit support summary</Text>
+        <Text style={styles.summaryTitle}>{t('missedVisitSummary')}</Text>
         <Text style={styles.summaryBody}>{reminderSummary}</Text>
       </View>
 
-      {appointments.map((item) => (
+      {content.appointments.map((item) => (
         <View key={item.id} style={styles.card}>
           <Text style={styles.badge}>{item.status}</Text>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.meta}>{item.time}</Text>
           <Text style={styles.meta}>{item.location}</Text>
           <Text style={styles.body}>{item.summary}</Text>
-          <PrimaryButton title="Open details" onPress={() => onOpenVisitDetails(item.id)} variant="soft" />
+          <PrimaryButton title={copy.openDetails} onPress={() => onOpenVisitDetails(item.id)} variant="soft" />
         </View>
       ))}
     </ScreenFrame>
@@ -140,7 +224,7 @@ const styles = StyleSheet.create({
     padding: 18,
     backgroundColor: palette.secondarySoft,
     borderWidth: 1,
-    borderColor: '#B6D7CF',
+    borderColor: palette.border,
     gap: 8,
   },
   summaryTitle: {

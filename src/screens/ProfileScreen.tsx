@@ -4,34 +4,81 @@ import { InfoCard } from '../components/InfoCard';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenFrame } from '../components/ScreenFrame';
 import { SectionHeader } from '../components/SectionHeader';
-import { motherProfile, sponsorSignals } from '../data/appContent';
+import { useAppLanguage, type AppLanguage } from '../context/AppLanguageContext';
+import { getLocalizedContent } from '../data/localizedContent';
 import type { RootScreenProps } from '../types/navigation';
 
 export function ProfileScreen({ navigation }: RootScreenProps<'Profile'>): React.JSX.Element {
+  const { language, t } = useAppLanguage();
+  const content = getLocalizedContent(language);
+  const labels = profileLabels[language];
+
   return (
     <ScreenFrame>
-      <SectionHeader
-        title="Mother profile"
-        subtitle="A clean profile view for identity, clinic context, and support network."
-      />
+      <SectionHeader title={t('profileTitle')} subtitle={t('profileSubtitle')} />
       <InfoCard
-        eyebrow="Care profile"
-        title={motherProfile.name}
+        eyebrow={labels.careProfile}
+        title={content.motherProfile.name}
         body={[
-          `Village: ${motherProfile.village}`,
-          `Clinic: ${motherProfile.clinic}`,
-          `Language: ${motherProfile.language}`,
-          `Due date: ${motherProfile.dueDate}`,
-          `Support contact: ${motherProfile.supportContact}`,
+          `${labels.village}: ${content.motherProfile.village}`,
+          `${labels.clinic}: ${content.motherProfile.clinic}`,
+          `${labels.language}: ${content.motherProfile.language}`,
+          `${labels.dueDate}: ${content.motherProfile.dueDate}`,
+          `${labels.supportContact}: ${content.motherProfile.supportContact}`,
         ].join('\n')}
       />
       <InfoCard
-        eyebrow="Partnership lens"
-        title="Why this screen matters"
-        body={sponsorSignals.join('\n')}
+        eyebrow={labels.partnershipLens}
+        title={labels.whyItMatters}
+        body={content.sponsorSignals.join('\n')}
         tone="accent"
       />
-      <PrimaryButton title="Back to dashboard" onPress={() => navigation.goBack()} />
+      <PrimaryButton title={t('backToDashboard')} onPress={() => navigation.goBack()} />
     </ScreenFrame>
   );
 }
+
+const profileLabels: Record<
+  AppLanguage,
+  {
+    careProfile: string;
+    village: string;
+    clinic: string;
+    language: string;
+    dueDate: string;
+    supportContact: string;
+    partnershipLens: string;
+    whyItMatters: string;
+  }
+> = {
+  English: {
+    careProfile: 'Care profile',
+    village: 'Village',
+    clinic: 'Clinic',
+    language: 'Language',
+    dueDate: 'Due date',
+    supportContact: 'Support contact',
+    partnershipLens: 'Partnership lens',
+    whyItMatters: 'Why this screen matters',
+  },
+  Kiswahili: {
+    careProfile: 'Wasifu wa huduma',
+    village: 'Kijiji',
+    clinic: 'Kliniki',
+    language: 'Lugha',
+    dueDate: 'Tarehe ya kujifungua',
+    supportContact: 'Mtu wa msaada',
+    partnershipLens: 'Mtazamo wa ushirikiano',
+    whyItMatters: 'Kwa nini skrini hii ni muhimu',
+  },
+  Kinyarwanda: {
+    careProfile: 'Umwirondoro w’ubuvuzi',
+    village: 'Umudugudu',
+    clinic: 'Ivuriro',
+    language: 'Ururimi',
+    dueDate: 'Itariki yo kubyara',
+    supportContact: 'Uwo kumuhamagara',
+    partnershipLens: 'Inzira y’ubufatanye',
+    whyItMatters: 'Impamvu iyi paji ari ingenzi',
+  },
+};

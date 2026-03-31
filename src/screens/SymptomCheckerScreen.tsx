@@ -4,20 +4,21 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ScreenFrame } from '../components/ScreenFrame';
 import { SectionHeader } from '../components/SectionHeader';
-import { symptomLevels } from '../data/appContent';
+import { useAppLanguage } from '../context/AppLanguageContext';
+import { getLocalizedContent } from '../data/localizedContent';
 import { palette, radii } from '../theme/tokens';
 import type { RootScreenProps } from '../types/navigation';
 
 export function SymptomCheckerScreen({
   navigation,
 }: RootScreenProps<'SymptomChecker'>): React.JSX.Element {
+  const { language, t } = useAppLanguage();
+  const content = getLocalizedContent(language);
+
   return (
     <ScreenFrame>
-      <SectionHeader
-        title="Symptom checker"
-        subtitle="Structured triage with calm language and clear urgency signals."
-      />
-      {symptomLevels.map((item, index) => (
+      <SectionHeader title={t('symptomChecker')} subtitle={t('symptomSubtitle')} />
+      {content.symptomLevels.map((item, index) => (
         <View key={item.level} style={styles.card}>
           <View style={[styles.levelPill, index === 0 ? styles.normal : index === 1 ? styles.monitor : styles.urgent]}>
             <Text style={[styles.levelText, index === 0 ? styles.normalText : index === 1 ? styles.monitorText : styles.urgentText]}>
@@ -27,7 +28,7 @@ export function SymptomCheckerScreen({
           <Text style={styles.body}>{item.body}</Text>
         </View>
       ))}
-      <PrimaryButton title="Close" onPress={() => navigation.goBack()} />
+      <PrimaryButton title={t('close')} onPress={() => navigation.goBack()} />
     </ScreenFrame>
   );
 }

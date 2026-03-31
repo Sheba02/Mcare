@@ -1,36 +1,56 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { InfoCard } from '../components/InfoCard';
-import { PrimaryButton } from '../components/PrimaryButton';
+import { ListRow } from '../components/ListRow';
 import { ScreenFrame } from '../components/ScreenFrame';
 import { SectionHeader } from '../components/SectionHeader';
-import { appointments, dashboardStats, quickActions } from '../data/appContent';
+import { useAppLanguage } from '../context/AppLanguageContext';
+import { getLocalizedContent } from '../data/localizedContent';
 import { gradients, palette, radii } from '../theme/tokens';
 
 type DashboardScreenProps = {
+  onOpenNotifications: () => void;
   onOpenProfile: () => void;
   onOpenSymptomChecker: () => void;
 };
 
 export function DashboardScreen({
+  onOpenNotifications,
   onOpenProfile,
   onOpenSymptomChecker,
 }: DashboardScreenProps): React.JSX.Element {
+  const { language, t } = useAppLanguage();
+  const content = getLocalizedContent(language);
+  const notificationCount = content.alertReminders.length;
+
   return (
     <ScreenFrame>
+      <View style={styles.topBar}>
+        <Pressable onPress={onOpenProfile} style={styles.profileButton}>
+          <MaterialCommunityIcons name="account-circle-outline" size={24} color={palette.text} />
+        </Pressable>
+        <View style={styles.topBarActions}>
+          <Pressable onPress={onOpenNotifications} style={styles.notificationButton}>
+            <MaterialCommunityIcons name="bell-outline" size={22} color={palette.text} />
+            {notificationCount > 0 ? (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>{notificationCount}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+        </View>
+      </View>
+
       <LinearGradient colors={gradients.hero} style={styles.hero}>
-        <Text style={styles.eyebrow}>Good morning, Neema</Text>
-        <Text style={styles.heroTitle}>Your care journey is organized, visible, and calm.</Text>
-        <Text style={styles.heroBody}>
-          Today’s view keeps appointments, symptom support, and child health tracking in one sponsor-worthy dashboard.
-        </Text>
+        <Text style={styles.eyebrow}>{t('homeGreeting')}</Text>
+        <Text style={styles.heroTitle}>{t('homeTitle')}</Text>
+        <Text style={styles.heroBody}>{t('homeBody')}</Text>
       </LinearGradient>
 
       <View style={styles.statsGrid}>
-        {dashboardStats.map((item) => (
+        {content.dashboardStats.map((item) => (
           <View key={item.label} style={styles.statCard}>
             <Text style={styles.statValue}>{item.value}</Text>
             <Text style={styles.statLabel}>{item.label}</Text>
@@ -38,36 +58,70 @@ export function DashboardScreen({
         ))}
       </View>
 
-      <SectionHeader title="Quick actions" subtitle="Fast routes to the flows mothers use most." />
-      <View style={styles.actionList}>
-        <PrimaryButton
-          title={quickActions[0]}
-          onPress={onOpenSymptomChecker}
-          icon={<MaterialCommunityIcons name="heart-pulse" size={18} color={palette.white} />}
-        />
-        <PrimaryButton
-          title={quickActions[3]}
-          onPress={onOpenProfile}
-          variant="outline"
-          icon={<MaterialCommunityIcons name="account-circle-outline" size={18} color={palette.text} />}
-        />
+      <SectionHeader title={t('upcomingVisits')} subtitle={t('upcomingVisitsSubtitle')} />
+      <View style={styles.visitList}>
+        {content.appointments.map((item) => (
+          <ListRow
+            key={item.id}
+            title={item.title}
+            subtitle={`${item.location}. ${item.summary}`}
+            meta={item.time}
+            badge={item.status}
+          />
+        ))}
       </View>
-
-      <SectionHeader title="Upcoming visits" subtitle="A clinic-friendly timeline for reminders and follow-up." />
-      {appointments.map((item, index) => (
-        <InfoCard
-          key={item.id}
-          eyebrow={item.status}
-          title={item.title}
-          body={`${item.time} • ${item.location}\n${item.summary}`}
-          tone={index === 0 ? 'teal' : index === 1 ? 'accent' : 'neutral'}
-        />
-      ))}
     </ScreenFrame>
   );
 }
 
 const styles = StyleSheet.create({
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  profileButton: {
+    width: 48,
+    height: 48,
+    borderRadius: radii.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.white,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  topBarActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  notificationButton: {
+    width: 48,
+    height: 48,
+    borderRadius: radii.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.white,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.primary,
+  },
+  notificationBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: palette.white,
+  },
   hero: {
     borderRadius: radii.xl,
     padding: 22,
@@ -78,7 +132,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1.2,
     textTransform: 'uppercase',
-    color: '#D9EEE8',
+    color: '#FFE4EA',
   },
   heroTitle: {
     fontSize: 28,
@@ -89,7 +143,7 @@ const styles = StyleSheet.create({
   heroBody: {
     fontSize: 15,
     lineHeight: 24,
-    color: '#E3EFEC',
+    color: '#FFE9EE',
   },
   statsGrid: {
     flexDirection: 'row',
@@ -115,7 +169,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: palette.textMuted,
   },
-  actionList: {
-    gap: 12,
+  visitList: {
+    backgroundColor: palette.white,
+    borderRadius: radii.lg,
+    paddingHorizontal: 18,
+    borderWidth: 1,
+    borderColor: palette.border,
   },
 });

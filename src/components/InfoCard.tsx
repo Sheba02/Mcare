@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { palette, radii, shadows } from '../theme/tokens';
+import { palette, radii } from '../theme/tokens';
 
 type InfoCardTone = 'neutral' | 'teal' | 'peach' | 'accent';
 
@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
     padding: 18,
     borderWidth: 1,
     gap: 8,
-    ...shadows.card,
   },
   neutral: {
     backgroundColor: palette.white,
